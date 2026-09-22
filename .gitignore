@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+mutants/
+.mutmut-cache
+mutmut-stats.json
+
+.idea/
+.vscode/
+.DS_Store

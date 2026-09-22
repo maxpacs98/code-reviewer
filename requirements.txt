@@ -1,0 +1,2 @@
+# Runtime dependencies.
+# Intentionally empty: the reviewer core is stdlib-only for now.

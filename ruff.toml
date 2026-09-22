@@ -1,0 +1,35 @@
+line-length = 120
+target-version = "py313"
+
+[format]
+# Width alone decides line breaks. Trailing commas never force a split.
+skip-magic-trailing-comma = true
+
+[lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # import sorting
+    "B",    # bugbear
+    "UP",   # pyupgrade
+    "ANN",  # require annotations (full typing)
+    "RET",  # return consistency
+    "SIM",  # simplify
+    "C90",  # mccabe complexity
+    "PLR0912", # too many branches
+    "PLR0913", # too many arguments
+]
+ignore = [
+    "ANN401",  # allow Any where deliberate
+]
+
+[lint.mccabe]
+max-complexity = 8
+
+[lint.isort]
+# Must match format.skip-magic-trailing-comma.
+split-on-trailing-comma = false
+
+[lint.per-file-ignores]
+"tests/*" = ["ANN"]
