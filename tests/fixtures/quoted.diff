@@ -1,0 +1,22 @@
+diff --git "a/caf\303\251.txt" "b/caf\303\251.txt"
+index 5626abf..f719efd 100644
+--- "a/caf\303\251.txt"
++++ "b/caf\303\251.txt"
+@@ -1 +1 @@
+-one
++two
+diff --git "a/logo-\303\251.png" "b/logo-\303\251.png"
+new file mode 100644
+index 0000000..f584f40
+Binary files /dev/null and "b/logo-\303\251.png" differ
+diff --git a/plain.txt "b/na\303\257ve.txt"
+similarity index 100%
+rename from plain.txt
+rename to "na\303\257ve.txt"
+diff --git "a/say \"hi\".txt" "b/say \"hi\".txt"
+new file mode 100644
+index 0000000..45b983b
+--- /dev/null
++++ "b/say \"hi\".txt"	
+@@ -0,0 +1 @@
++hi

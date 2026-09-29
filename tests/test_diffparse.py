@@ -75,3 +75,24 @@ def test_directory_of_a_root_level_file(load_diff):
     diff = load_diff("mixed.diff")
     readme = next(f for f in diff.files if f.path == "README.md")
     assert readme.directory == "."
+
+
+def test_decodes_paths_git_quoted(load_diff):
+    diff = load_diff("quoted.diff")
+    assert [f.path for f in diff.files] == ["café.txt", "logo-é.png", "naïve.txt", 'say "hi".txt']
+
+
+def test_quoted_binary_file_is_kept(load_diff):
+    logo = next(f for f in load_diff("quoted.diff").files if f.path == "logo-é.png")
+    assert logo.kind is ChangeKind.ADDED
+    assert logo.is_binary
+
+
+def test_rename_to_a_quoted_path_keeps_the_plain_old_path(load_diff):
+    renamed = next(f for f in load_diff("quoted.diff").files if f.kind is ChangeKind.RENAMED)
+    assert (renamed.old_path, renamed.path) == ("plain.txt", "naïve.txt")
+
+
+def test_malformed_quoted_path_is_kept_verbatim():
+    diff = parse_unified_diff('diff --git a/x b/x\n--- a/x\n+++ "b/x\\"\n+y\n')
+    assert [f.path for f in diff.files] == ['"b/x\\"']

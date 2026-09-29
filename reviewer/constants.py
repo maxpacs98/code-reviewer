@@ -1,9 +1,12 @@
 """Project-wide constants."""
 
+import re
+
 from reviewer.model import ChangeKind, Severity
 
 DIFF_HEADER = "diff --git "
 DEV_NULL = "/dev/null"
+HEADER_PATHS = re.compile(r'(?P<old>"(?:[^"\\]|\\.)*"|a/.*?) (?P<new>"(?:[^"\\]|\\.)*"|b/.*)')
 
 CHECK_FILE_COUNT = "diff-size/file-count"
 DEFAULT_MAX_FILES = 50
