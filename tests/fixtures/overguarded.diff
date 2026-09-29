@@ -1,0 +1,53 @@
+diff --git a/src/orders/service.ts b/src/orders/service.ts
+index 1111111..2222222 100644
+--- a/src/orders/service.ts
++++ b/src/orders/service.ts
+@@ -1,4 +1,26 @@
+ import { Order } from "./model";
+-export function total(order: Order): number {
+-  return order.lines.reduce((sum, line) => sum + line.price, 0);
++
++export function total(order?: Order | null): number {
++  if (!order) return 0;
++  if (order === undefined || order === null) {
++    return 0;
++  }
++  const lines = order?.lines ?? [];
++  let sum = 0;
++  for (const line of lines || []) {
++    try {
++      const price = typeof line?.price === "number" ? line.price : 0;
++      sum += price ?? 0;
++    } catch (e) {
++    }
++  }
++  return sum;
++}
++
++export function label(order: Order): string {
++  // @ts-ignore legacy field
++  const name = (order as any)?.customer?.name ?? "";
++  return name || "";
++}
++
++export const url = "https://example.com/orders?.json";
+ }
+diff --git a/src/orders/service.test.ts b/src/orders/service.test.ts
+index 3333333..4444444 100644
+--- a/src/orders/service.test.ts
++++ b/src/orders/service.test.ts
+@@ -1,1 +1,2 @@
+ import { total } from "./service";
++expect(total(undefined as any)).toBe(0);
+diff --git a/app/orders.py b/app/orders.py
+index 5555555..6666666 100644
+--- a/app/orders.py
++++ b/app/orders.py
+@@ -1,2 +1,6 @@
+ def total(order):
+-    return sum(line.price for line in order.lines)
++    try:
++        return sum(line.price for line in getattr(order, "lines", None) or [])
++    except Exception:
++        pass
++    return 0  # type: ignore[return-value]

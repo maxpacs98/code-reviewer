@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from reviewer.checks import build_registry, run_all
-from reviewer.constants import DEFAULT_MAX_FILES, EXIT_FINDINGS, EXIT_OK
+from reviewer.constants import DEFAULT_MAX_FILES, DEFAULT_MAX_GUARD_DENSITY, EXIT_FINDINGS, EXIT_OK
 from reviewer.diffparse import parse_unified_diff
 from reviewer.model import Finding, Severity
 from reviewer.render import render_check_list, render_file_table, render_findings
@@ -25,6 +25,12 @@ def _build_parser() -> argparse.ArgumentParser:
         type=int,
         default=DEFAULT_MAX_FILES,
         help=f"fail above this many changed files (default: {DEFAULT_MAX_FILES})",
+    )
+    parser.add_argument(
+        "--max-guard-density",
+        type=float,
+        default=DEFAULT_MAX_GUARD_DENSITY,
+        help=f"warn above this many weighted guards per added line (default: {DEFAULT_MAX_GUARD_DENSITY})",
     )
     parser.add_argument("--list-checks", action="store_true", help="list every available check and exit")
     parser.add_argument("--no-color", action="store_true", help="disable coloured output")
@@ -50,7 +56,7 @@ def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     color = _use_color(no_color_flag=args.no_color)
 
-    registry = build_registry(max_files=args.max_files)
+    registry = build_registry(max_files=args.max_files, max_guard_density=args.max_guard_density)
     if args.list_checks:
         sys.stdout.write(render_check_list(registry, color=color))
         return EXIT_OK

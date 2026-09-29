@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -103,3 +104,25 @@ class CheckSpec:
     severity: Severity
     summary: str
     run: Callable[[Diff], list[Finding]]
+
+
+@dataclass(frozen=True)
+class GuardPattern:
+    """A defensive construct worth counting, and how much it weighs against the code that uses it."""
+
+    name: str
+    pattern: re.Pattern[str]
+    weight: int = 1
+    in_comment: bool = False
+
+
+@dataclass(frozen=True)
+class Language:
+    """What the reviewer needs to know to read source files written in one language."""
+
+    name: str
+    extensions: tuple[str, ...]
+    non_source: re.Pattern[str]
+    line_comment: str
+    quotes: tuple[str, ...]
+    guards: tuple[GuardPattern, ...]
