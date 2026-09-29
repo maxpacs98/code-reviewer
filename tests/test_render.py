@@ -67,7 +67,7 @@ def test_no_findings_message():
 
 def test_check_list_shows_id_severity_and_summary():
     out = render_check_list(build_registry())
-    assert "Checks (1)" in out
+    assert f"Checks ({len(build_registry())})" in out
     assert "diff-size/file-count" in out
     assert "error" in out
     assert "limit" in out
