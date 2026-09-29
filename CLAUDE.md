@@ -43,6 +43,10 @@ width alone, so code stays horizontal until it genuinely does not fit.
 Run `make check` before finishing a change. It formats, lints, typechecks and tests.
 There is no activated virtualenv, so every tool needs its `.venv/bin/` prefix - use the Makefile.
 
+## Tone
+
+Playful and critical humour in chat is welcome. Never in code, comments, commits or docs.
+
 ## Changing these rules
 
 This file is not yours to edit, and it should change rarely. If a rule blocks the correct change, or
