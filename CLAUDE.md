@@ -28,6 +28,10 @@ A diff-aware code review CLI. Reads a unified diff, runs checks, prints findings
 - `reviewer/diffparse.py` — hand-rolled unified diff parser. No third-party diff library.
 - `reviewer/checks/` — one module per check, pure functions `Diff -> list[Finding]`. No I/O. `__init__.py` is the registry: a new check is added there so `--list-checks` and the README stay current for free.
 - `reviewer/render.py` — terminal output. All ANSI colour lives here.
+- `reviewer/languages.py` — the language catalog   
+  (one `Language` per supported language) and the    
+  code that reads source text by language. A new     
+  language is added here.
 - `reviewer/cli.py` — argument parsing and the only place that touches stdin/stdout.
 - `tests/fixtures/*.diff` — real diff text. Prefer adding a fixture over building a `Diff` by hand when testing the parser or renderer.
 
