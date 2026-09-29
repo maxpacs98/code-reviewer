@@ -14,26 +14,45 @@ TYPESCRIPT = Language(
     line_comment="//",
     quotes=("'", '"', "`"),
     guards=(
-        GuardPattern("?.", re.compile(r"\?\.(?!\d)")),
-        GuardPattern("??", re.compile(r"\?\?")),
-        GuardPattern("try", re.compile(r"\btry\s*\{")),
-        GuardPattern("nullish check", re.compile(r"[!=]==?\s*(?:undefined|null)\b|\b(?:undefined|null)\s*[!=]==?")),
-        GuardPattern("typeof check", re.compile(r"\btypeof\s+[\w.$?]+\s*[!=]==?")),
-        GuardPattern("early bail-out", re.compile(r"\bif\s*\(\s*!\s*[\w.$?]+\s*\)\s*\{?\s*(?:return|throw)\b")),
-        GuardPattern("|| fallback", re.compile(r"\|\|\s*(?:\[\s*\]|\{\s*\}|([\"'`])\1|0\b)")),
+        GuardPattern("?.", re.compile(r"\?\.(?!\d)"), example="a?.b"),
+        GuardPattern("??", re.compile(r"\?\?"), example="a ?? b"),
+        GuardPattern("try", re.compile(r"\btry\s*\{"), example="try {"),
+        GuardPattern(
+            "nullish check",
+            re.compile(r"[!=]==?\s*(?:undefined|null)\b|\b(?:undefined|null)\s*[!=]==?"),
+            example="if (x === undefined) go();",
+        ),
+        GuardPattern(
+            "typeof check", re.compile(r"\btypeof\s+[\w.$?]+\s*[!=]==?"), example="if (typeof x?.y === 'number') go();"
+        ),
+        GuardPattern(
+            "early bail-out",
+            re.compile(r"\bif\s*\(\s*!\s*[\w.$?]+\s*\)\s*\{?\s*(?:return|throw)\b"),
+            example="if (!user) return;",
+        ),
+        GuardPattern(
+            "|| fallback", re.compile(r"\|\|\s*(?:\[\s*\]|\{\s*\}|([\"'`])\1|0\b)"), example="const xs = ys || [];"
+        ),
         GuardPattern(
             "swallowed error",
             re.compile(
                 r"\bcatch\s*(?:\([^)]*\))?\s*\{\s*\}|\.catch\(\s*(?:\([^)]*\)|\w+)\s*=>\s*(?:\{\s*\}|undefined|null)\s*\)"
             ),
             weight=HEAVY_GUARD_WEIGHT,
+            example="p.catch(() => {});",
         ),
-        GuardPattern("as any", re.compile(r"\bas\s+(?:any\b|unknown\s+as\b)"), weight=HEAVY_GUARD_WEIGHT),
+        GuardPattern(
+            "as any",
+            re.compile(r"\bas\s+(?:any\b|unknown\s+as\b)"),
+            weight=HEAVY_GUARD_WEIGHT,
+            example="const x = y as any;",
+        ),
         GuardPattern(
             "ts-ignore",
             re.compile(r"@ts-(?:ignore|expect-error|nocheck)\b"),
             weight=HEAVY_GUARD_WEIGHT,
             in_comment=True,
+            example="// @ts-ignore",
         ),
     ),
 )
@@ -45,19 +64,38 @@ PYTHON = Language(
     line_comment="#",
     quotes=("'", '"'),
     guards=(
-        GuardPattern("try", re.compile(r"\btry\s*:")),
-        GuardPattern("broad except", re.compile(r"\bexcept\s*(?:\(?\s*(?:Base)?Exception\b[^:]*)?:")),
-        GuardPattern("None check", re.compile(r"\bis\s+(?:not\s+)?None\b")),
-        GuardPattern("early bail-out", re.compile(r"\bif\s+not\s+[\w.]+\s*:\s*(?:return|raise)\b")),
-        GuardPattern("getattr default", re.compile(r"\bgetattr\([^()]*,[^()]*,[^()]*\)")),
-        GuardPattern("hasattr", re.compile(r"\bhasattr\(")),
-        GuardPattern("or fallback", re.compile(r"\bor\s+(?:\[\s*\]|\{\s*\}|([\"'])\1|0\b|None\b)")),
+        GuardPattern("try", re.compile(r"\btry\s*:"), example="try:"),
         GuardPattern(
-            "swallowed error", re.compile(r"\bexcept\b[^:\n]*:\s*(?:pass\b|\.\.\.)"), weight=HEAVY_GUARD_WEIGHT
+            "broad except",
+            re.compile(r"\bexcept\s*(?:\(?\s*(?:Base)?Exception\b[^:]*)?:"),
+            example="except Exception as e:",
         ),
-        GuardPattern("cast Any", re.compile(r"\bcast\(\s*Any\b"), weight=HEAVY_GUARD_WEIGHT),
+        GuardPattern("None check", re.compile(r"\bis\s+(?:not\s+)?None\b"), example="if x is not None:"),
         GuardPattern(
-            "type: ignore", re.compile(r"\b(?:type|pyright):\s*ignore\b"), weight=HEAVY_GUARD_WEIGHT, in_comment=True
+            "early bail-out", re.compile(r"\bif\s+not\s+[\w.]+\s*:\s*(?:return|raise)\b"), example="if not user: return"
+        ),
+        GuardPattern(
+            "getattr default", re.compile(r"\bgetattr\([^()]*,[^()]*,[^()]*\)"), example="v = getattr(x, 'y', None)"
+        ),
+        GuardPattern("hasattr", re.compile(r"\bhasattr\("), example="if hasattr(x, 'y'):"),
+        GuardPattern(
+            "or fallback", re.compile(r"\bor\s+(?:\[\s*\]|\{\s*\}|([\"'])\1|0\b|None\b)"), example="xs = ys or []"
+        ),
+        GuardPattern(
+            "swallowed error",
+            re.compile(r"\bexcept\b[^:\n]*:\s*(?:pass\b|\.\.\.)"),
+            weight=HEAVY_GUARD_WEIGHT,
+            example="except ValueError: pass",
+        ),
+        GuardPattern(
+            "cast Any", re.compile(r"\bcast\(\s*Any\b"), weight=HEAVY_GUARD_WEIGHT, example="v = cast(Any, x)"
+        ),
+        GuardPattern(
+            "type: ignore",
+            re.compile(r"\b(?:type|pyright):\s*ignore\b"),
+            weight=HEAVY_GUARD_WEIGHT,
+            in_comment=True,
+            example="v = x  # type: ignore",
         ),
     ),
 )

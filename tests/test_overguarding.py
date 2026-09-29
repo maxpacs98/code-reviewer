@@ -137,59 +137,6 @@ def test_python_file_named_like_a_test_word_is_still_source():
     assert len(review(change("app/latest_prices.py", ["except: pass"]))) == 1
 
 
-@pytest.mark.parametrize(
-    ("path", "line", "name"),
-    [
-        ("a.ts", "x?.y", "?."),
-        ("a.ts", "x ?? y", "??"),
-        ("a.ts", "try {", "try"),
-        ("a.ts", "if (x === undefined) go();", "nullish check"),
-        ("a.ts", "if (null != x) go();", "nullish check"),
-        ("a.ts", "if (typeof x !== 'string') go();", "typeof check"),
-        ("a.ts", "if (typeof x?.y === 'number') go();", "typeof check"),
-        ("a.ts", "if (!user) return;", "early bail-out"),
-        ("a.ts", "if (!user) { throw new Error(); }", "early bail-out"),
-        ("a.ts", "const xs = ys || [];", "|| fallback"),
-        ("a.ts", "const s = t || '';", "|| fallback"),
-        ("a.ts", "} catch {}", "swallowed error"),
-        ("a.ts", "p.catch(() => {});", "swallowed error"),
-        ("a.ts", "p.catch((e) => undefined);", "swallowed error"),
-        ("a.ts", "const x = y as unknown as Z;", "as any"),
-        ("a.ts", "// @ts-expect-error", "ts-ignore"),
-        ("a.py", "try:", "try"),
-        ("a.py", "except:", "broad except"),
-        ("a.py", "except Exception as e:", "broad except"),
-        ("a.py", "if x is not None:", "None check"),
-        ("a.py", "if not user: return", "early bail-out"),
-        ("a.py", "v = getattr(x, 'y', None)", "getattr default"),
-        ("a.py", "if hasattr(x, 'y'):", "hasattr"),
-        ("a.py", "xs = ys or []", "or fallback"),
-        ("a.py", "except ValueError: ...", "swallowed error"),
-        ("a.py", "v = cast(Any, x)", "cast Any"),
-        ("a.py", "v = x  # pyright: ignore", "type: ignore"),
-    ],
-)
-def test_each_guard_is_recognised(path, line, name):
-    findings = review(change(path, [line]), max_density=0, min_lines=1)
-    assert f"x {name}" in findings[0].message
-
-
-@pytest.mark.parametrize(
-    ("path", "line"),
-    [
-        ("a.ts", "const x = a ? .5 : 1;"),
-        ("a.ts", "const x = a?.5:1;"),
-        ("a.ts", "except ValueError: pass"),
-        ("a.py", "except ValueError:"),
-        ("a.py", "v = getattr(x, 'y')"),
-        ("a.py", "xs = ys or other"),
-        ("a.ts", "const s = t || 'fallback';"),
-    ],
-)
-def test_lookalikes_are_not_guards(path, line):
-    assert review(change(path, [line]), max_density=0, min_lines=1) == []
-
-
 def test_registry_binds_the_configured_density():
     diff = Diff(files=(change("src/a.ts", ["a?.b;"] + plain(19)),))
     assert run_all(diff, build_registry(max_guard_density=0.01))

@@ -1,6 +1,6 @@
 import pytest
 
-from reviewer.languages import PYTHON, TYPESCRIPT, language_for, split_comment
+from reviewer.languages import LANGUAGES, PYTHON, TYPESCRIPT, language_for, split_comment
 
 
 @pytest.mark.parametrize(
@@ -26,3 +26,13 @@ def test_split_comment_uses_the_languages_comment_marker():
 
 def test_split_comment_without_a_comment():
     assert split_comment("return 'it\\'s';", TYPESCRIPT) == ("return '     ';", "")
+
+
+@pytest.mark.parametrize(
+    ("language", "guard"),
+    [(language, guard) for language in LANGUAGES for guard in language.guards],
+    ids=lambda value: getattr(value, "name", ""),
+)
+def test_every_guard_matches_its_own_example(language, guard):
+    code, comment = split_comment(guard.example, language)
+    assert guard.pattern.search(comment if guard.in_comment else code)

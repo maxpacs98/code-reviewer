@@ -112,6 +112,7 @@ class GuardPattern:
 
     name: str
     pattern: re.Pattern[str]
+    example: str
     weight: int = 1
     in_comment: bool = False
 
