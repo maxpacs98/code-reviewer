@@ -4,46 +4,11 @@ from __future__ import annotations
 
 from collections import Counter
 
-from reviewer.constants import (
-    CHECK_OVERGUARDING,
-    DEFAULT_MAX_GUARD_DENSITY,
-    HEAVY_GUARD_WEIGHT,
-    LANGUAGES,
-    MIN_DENSITY_LINES,
-)
+from reviewer.constants import CHECK_OVERGUARDING, DEFAULT_MAX_GUARD_DENSITY, HEAVY_GUARD_WEIGHT, MIN_DENSITY_LINES
+from reviewer.languages import LANGUAGES, language_for, split_comment
 from reviewer.model import Diff, FileChange, Finding, GuardPattern, Language, Line, Severity
 
 type Hit = tuple[GuardPattern, int]
-
-
-def _language_for(path: str, languages: tuple[Language, ...]) -> Language | None:
-    """The language a product source file is written in, or None for tests, typings and other files."""
-    for language in languages:
-        if path.endswith(language.extensions) and not language.non_source.search(path):
-            return language
-    return None
-
-
-def _split_comment(text: str, language: Language) -> tuple[str, str]:
-    """Separate a line into its code, with string contents blanked, and its trailing comment."""
-    code: list[str] = []
-    quote: str | None = None
-    escaped = False
-    for index, char in enumerate(text):
-        if quote is None:
-            if text.startswith(language.line_comment, index):
-                return "".join(code), text[index:]
-            quote = char if char in language.quotes else None
-            code.append(char)
-        elif escaped or char == "\\":
-            escaped = not escaped
-            code.append(" ")
-        elif char == quote:
-            quote = None
-            code.append(char)
-        else:
-            code.append(" ")
-    return "".join(code), ""
 
 
 def _consecutive_runs(lines: tuple[Line, ...]) -> list[list[Line]]:
@@ -61,7 +26,7 @@ def _guard_hits(lines: tuple[Line, ...], language: Language) -> list[Hit]:
     """Every guard in the given lines, with the line number it starts on."""
     hits: list[Hit] = []
     for run in _consecutive_runs(lines):
-        parts = [_split_comment(line.text, language) for line in run]
+        parts = [split_comment(line.text, language) for line in run]
         code = "\n".join(part[0] for part in parts)
         comments = "\n".join(part[1] for part in parts)
         for guard in language.guards:
@@ -120,7 +85,7 @@ def check_overguarding(
     """Flag files whose added lines lean on defensive guards more than the code seems to need."""
     findings = []
     for change in diff.files:
-        language = _language_for(change.path, languages)
+        language = language_for(change.path, languages)
         finding = None if language is None else _review(change, language, max_density, min_lines)
         if finding is not None:
             findings.append(finding)
