@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Behaviour report mockup</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #1d2330; --muted: #6b7385; --line: #e3e6ec;
+    --green: #1f9d55; --green-bg: #e7f6ee; --red: #d64545; --red-bg: #fdecec;
+    --amber: #b7791f; --amber-bg: #fdf4e3; --blue: #2f6fdb; --blue-bg: #e9f0fd; --violet: #7b5cd6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 -apple-system, "Segoe UI", Inter, sans-serif; }
+  .page { width: 1400px; padding: 28px 32px 40px; }
+  header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+  header h1 { font-size: 22px; margin: 0; }
+  header .meta { color: var(--muted); }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  h2 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+
+  .composition .bar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
+  .composition .bar div { color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; padding-left: 8px; }
+  .legend { display: flex; gap: 18px; color: var(--muted); font-size: 12.5px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .callout { margin-top: 10px; padding: 8px 12px; border-radius: 6px; background: var(--amber-bg); color: #7a5212; font-size: 13px; }
+
+  .grid { display: grid; grid-template-columns: 420px 1fr; gap: 18px; margin-top: 18px; }
+  .req p { margin: 0 0 10px; }
+  .req mark { border-radius: 3px; padding: 0 3px; }
+  .req mark.ok { background: var(--green-bg); color: var(--green); }
+  .req mark.miss { background: var(--amber-bg); color: var(--amber); }
+  .req .source { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  .summary { display: flex; gap: 10px; margin-top: 14px; }
+  .summary div { flex: 1; border-radius: 8px; padding: 10px 12px; }
+  .summary b { display: block; font-size: 22px; }
+
+  .cards { display: flex; flex-direction: column; gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .card.flag { border-color: #f1b3b3; box-shadow: 0 0 0 3px var(--red-bg); }
+  .card-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .verb { font: 700 12px/1 ui-monospace, Menlo, monospace; padding: 4px 7px; border-radius: 5px; color: #fff; }
+  .route { font: 600 15px ui-monospace, Menlo, monospace; }
+  .card-head .via { margin-left: auto; color: var(--muted); font-size: 12px; font-family: ui-monospace, Menlo, monospace; }
+  .rows { padding: 6px 16px 10px; }
+  .row { display: grid; grid-template-columns: 110px 1fr 170px; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--line); align-items: center; }
+  .row:last-child { border-bottom: 0; }
+  .row .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .row code { font: 13px ui-monospace, Menlo, monospace; }
+  .add { color: var(--green); } .del { color: var(--red); text-decoration: line-through; }
+  .tag { justify-self: end; }
+  .tag.ok { background: var(--green-bg); color: var(--green); }
+  .tag.unexplained { background: var(--red-bg); color: var(--red); }
+  .tag.missing { background: var(--amber-bg); color: var(--amber); }
+
+  .graph { margin-top: 18px; }
+  .graph svg text { font: 12px ui-monospace, Menlo, monospace; fill: var(--ink); }
+  .graph svg .label { font: 600 11px -apple-system, "Segoe UI", sans-serif; fill: var(--muted); letter-spacing: .05em; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>PR #418 · Add coupon codes to checkout</h1>
+    <span class="meta">feature/coupons → main · 38 files · +1 204 −611</span>
+  </header>
+
+  <section class="panel composition">
+    <h2>What this PR is made of</h2>
+    <div class="bar">
+      <div style="width:41%;background:#2f6fdb">feature 41%</div>
+      <div style="width:12%;background:#1f9d55">tests 12%</div>
+      <div style="width:6%;background:#7b5cd6">migr. 6%</div>
+      <div style="width:3%;background:#8a94a6"></div>
+      <div style="width:8%;background:#b7791f">deps 8%</div>
+      <div style="width:30%;background:#c3c9d4;color:#39404d">moves &amp; renames 30%</div>
+    </div>
+    <div class="legend">
+      <span><i style="background:#2f6fdb"></i>feature code</span>
+      <span><i style="background:#1f9d55"></i>tests</span>
+      <span><i style="background:#7b5cd6"></i>migrations</span>
+      <span><i style="background:#8a94a6"></i>config 3%</span>
+      <span><i style="background:#b7791f"></i>dependencies</span>
+      <span><i style="background:#c3c9d4"></i>pure moves / renames</span>
+    </div>
+    <div class="callout">30% of the churn is files moved from <code>src/common/</code> to <code>src/shared/</code>, and the description never mentions it. Consider a separate PR.</div>
+  </section>
+
+  <div class="grid">
+    <section class="panel req">
+      <h2>Requirement · from the PR description</h2>
+      <div class="source">Matched by identifier and route name. No interpretation.</div>
+      <p>Customers can enter a <mark class="ok">couponCode</mark> at checkout when creating an order (<mark class="ok">POST /orders</mark>).</p>
+      <p>A coupon can only be used once. Using it twice returns <mark class="ok">409</mark>.</p>
+      <p>The order detail page shows the applied <mark class="ok">discount</mark>.</p>
+      <p>Coupons <mark class="miss">expire</mark> after 30 days via a nightly <mark class="miss">cron</mark> job.</p>
+      <div class="summary">
+        <div style="background:var(--green-bg);color:var(--green)"><b>4</b>matched</div>
+        <div style="background:var(--red-bg);color:var(--red)"><b>1</b>unexplained change</div>
+        <div style="background:var(--amber-bg);color:var(--amber)"><b>1</b>possibly missing</div>
+      </div>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <div class="card-head">
+          <span class="verb" style="background:#1f9d55">POST</span><span class="route">/orders</span>
+          <span class="via">OrdersController.create ← OrdersService.create</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">request</span><code>CreateOrderDto <span class="add">+ couponCode?: string</span> <span style="color:var(--muted)">@IsOptional @IsString</span></code><span class="pill tag ok">in requirement</span></div>
+          <div class="row"><span class="k">throws</span><code class="add">+ ConflictException (409) "coupon already used"</code><span class="pill tag ok">in requirement</span></div>
+          <div class="row"><span class="k">writes</span><code>orders, <span class="add">+ order_coupons</span></code><span class="pill tag ok">via couponCode</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="verb" style="background:#2f6fdb">GET</span><span class="route">/orders/:id</span>
+          <span class="via">OrdersController.findOne ← OrdersService.findOne</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">response</span><code>OrderDto <span class="add">+ discount: number</span></code><span class="pill tag ok">in requirement</span></div>
+          <div class="row"><span class="k">reads</span><code>orders, <span class="add">+ order_coupons</span></code><span class="pill tag ok">via discount</span></div>
+        </div>
+      </div>
+
+      <div class="card flag">
+        <div class="card-head">
+          <span class="verb" style="background:#d64545">DELETE</span><span class="route">/admin/users/:id</span>
+          <span class="via">UsersController.remove</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">guards</span><code><span class="del">@Roles("admin")</span> <span style="color:var(--muted)">removed from handler</span></code><span class="pill tag unexplained">unexplained change</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="border-style:dashed">
+        <div class="card-head">
+          <span class="verb" style="background:#b7791f">CRON</span><span class="route">coupon expiry</span>
+          <span class="via">no @Cron handler touched</span>
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">expected</span><code style="color:var(--muted)">requirement mentions "expire" and "cron", but no scheduled job changed</code><span class="pill tag missing">possibly missing</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel graph">
+    <h2>Impact graph · changed files to entry points</h2>
+    <svg width="100%" viewBox="0 0 1334 250">
+      <defs>
+        <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8a94a6"/></marker>
+      </defs>
+      <rect x="4" y="18" width="960" height="222" rx="10" fill="#f3f7fe" stroke="#c9d8f6"/>
+      <text class="label" x="18" y="38">CLUSTER 1 · COUPONS</text>
+      <rect x="990" y="18" width="340" height="222" rx="10" fill="#fdf1f1" stroke="#f1b3b3"/>
+      <text class="label" x="1004" y="38">CLUSTER 2 · UNRELATED TO THE OTHER CHANGES</text>
+
+      <g>
+        <rect x="24" y="64" width="190" height="34" rx="6" fill="#fff" stroke="#2f6fdb" stroke-width="2"/><text x="36" y="86">coupon.entity.ts ●</text>
+        <rect x="24" y="150" width="190" height="34" rx="6" fill="#fff" stroke="#7b5cd6" stroke-width="2"/><text x="36" y="172">…-AddCoupons.ts ●</text>
+        <rect x="258" y="64" width="210" height="34" rx="6" fill="#fff" stroke="#2f6fdb" stroke-width="2"/><text x="270" y="86">coupon.repository.ts ●</text>
+        <rect x="512" y="64" width="190" height="34" rx="6" fill="#fff" stroke="#2f6fdb" stroke-width="2"/><text x="524" y="86">orders.service.ts ●</text>
+        <rect x="512" y="150" width="190" height="34" rx="6" fill="#fff" stroke="#2f6fdb" stroke-width="2"/><text x="524" y="172">order.dto.ts ●</text>
+        <rect x="746" y="64" width="200" height="34" rx="6" fill="#fff" stroke="#c3c9d4"/><text x="758" y="86">orders.controller.ts ○</text>
+        <rect x="740" y="120" width="112" height="30" rx="15" fill="#e7f6ee" stroke="#1f9d55"/><text x="752" y="140">POST /orders</text>
+        <rect x="860" y="120" width="92" height="30" rx="15" fill="#e9f0fd" stroke="#2f6fdb"/><text x="872" y="140">GET /:id</text>
+        <line x1="214" y1="81" x2="256" y2="81" stroke="#8a94a6" marker-end="url(#a)"/>
+        <line x1="468" y1="81" x2="510" y2="81" stroke="#8a94a6" marker-end="url(#a)"/>
+        <line x1="702" y1="81" x2="744" y2="81" stroke="#8a94a6" marker-end="url(#a)"/>
+        <line x1="702" y1="167" x2="760" y2="152" stroke="#8a94a6" marker-end="url(#a)"/>
+        <line x1="214" y1="167" x2="300" y2="100" stroke="#8a94a6" stroke-dasharray="4 3" marker-end="url(#a)"/>
+        <line x1="800" y1="98" x2="795" y2="118" stroke="#8a94a6" marker-end="url(#a)"/>
+        <line x1="880" y1="98" x2="895" y2="118" stroke="#8a94a6" marker-end="url(#a)"/>
+        <text x="24" y="222" style="fill:var(--muted)">● changed   ○ unchanged, on the path   ( ) entry point   - - migration for entity</text>
+      </g>
+
+      <g>
+        <rect x="1010" y="64" width="200" height="34" rx="6" fill="#fff" stroke="#d64545" stroke-width="2"/><text x="1022" y="86">users.controller.ts ●</text>
+        <rect x="1010" y="130" width="200" height="30" rx="15" fill="#fdecec" stroke="#d64545"/><text x="1020" y="150">DELETE /admin/users/:id</text>
+        <line x1="1100" y1="98" x2="1100" y2="128" stroke="#8a94a6" marker-end="url(#a)"/>
+        <text x="1010" y="196" style="fill:var(--red)">No path to cluster 1.</text>
+        <text x="1010" y="214" style="fill:var(--red)">Nothing in the requirement mentions it.</text>
+      </g>
+    </svg>
+  </section>
+</div>
+</body>
+</html>
