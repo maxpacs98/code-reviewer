@@ -17,15 +17,31 @@ class ChangeKind(Enum):
 
 
 @dataclass(frozen=True)
+class Line:
+    """One added or removed line, numbered as it appears in its side of the file."""
+
+    number: int
+    text: str
+
+
+@dataclass(frozen=True)
 class FileChange:
     """A single file touched by a diff."""
 
     path: str
     kind: ChangeKind
-    additions: int = 0
-    deletions: int = 0
+    added: tuple[Line, ...] = ()
+    removed: tuple[Line, ...] = ()
     old_path: str | None = None
     is_binary: bool = False
+
+    @property
+    def additions(self) -> int:
+        return len(self.added)
+
+    @property
+    def deletions(self) -> int:
+        return len(self.removed)
 
     @property
     def churn(self) -> int:

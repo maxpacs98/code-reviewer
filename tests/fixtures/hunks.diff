@@ -1,0 +1,16 @@
+diff --git a/src/cart.ts b/src/cart.ts
+index 1111111..2222222 100644
+--- a/src/cart.ts
++++ b/src/cart.ts
+@@ -3,4 +3,5 @@ export class Cart {
+   items: Item[] = [];
+-  total = 0;
++  total = 0;
+++++ not a header
+   add(item: Item) {
+@@ -20,3 +21,3 @@ export class Cart {
+   clear() {
+---- not a header either
++    this.items = [];
+   }
+\ No newline at end of file

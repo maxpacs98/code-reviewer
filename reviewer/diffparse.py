@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from reviewer.constants import BINARY_MARKERS, DEV_NULL, DIFF_HEADER, HEADER_PATHS, RENAME_FROM, RENAME_TO
-from reviewer.model import ChangeKind, Diff, FileChange
+from reviewer.constants import BINARY_MARKERS, DEV_NULL, DIFF_HEADER, HEADER_PATHS, HUNK_HEADER, RENAME_FROM, RENAME_TO
+from reviewer.model import ChangeKind, Diff, FileChange, Line
 
 
 def _unquote(path: str) -> str:
@@ -46,16 +46,36 @@ def _split_sections(text: str) -> list[list[str]]:
     return sections
 
 
+def _parse_hunks(lines: list[str]) -> tuple[tuple[Line, ...], tuple[Line, ...]]:
+    """Collect a file's added and removed lines, numbered as they sit in the new and old file."""
+    added: list[Line] = []
+    removed: list[Line] = []
+    old_number = new_number = 0
+    for line in lines:
+        header = HUNK_HEADER.match(line)
+        if header is not None:
+            old_number, new_number = int(header["old"]), int(header["new"])
+        elif line.startswith("+"):
+            added.append(Line(new_number, line[1:]))
+            new_number += 1
+        elif line.startswith("-"):
+            removed.append(Line(old_number, line[1:]))
+            old_number += 1
+        elif line.startswith(" ") or not line:
+            old_number += 1
+            new_number += 1
+    return tuple(added), tuple(removed)
+
+
 def _parse_section(lines: list[str]) -> FileChange | None:  # noqa: C901, PLR0912
     """Turn one file's worth of diff lines into a `FileChange`."""
     old_path, new_path = _header_paths(lines[0])
     kind = ChangeKind.MODIFIED
     renamed = False
-    additions = 0
-    deletions = 0
     is_binary = False
+    first_hunk = next((i for i, line in enumerate(lines) if HUNK_HEADER.match(line)), len(lines))
 
-    for line in lines[1:]:
+    for line in lines[1:first_hunk]:
         if line.startswith("new file mode"):
             kind = ChangeKind.ADDED
         elif line.startswith("deleted file mode"):
@@ -80,20 +100,17 @@ def _parse_section(lines: list[str]) -> FileChange | None:  # noqa: C901, PLR091
                 kind = ChangeKind.DELETED
             else:
                 new_path = _repo_path(target)
-        elif line.startswith("+"):
-            additions += 1
-        elif line.startswith("-"):
-            deletions += 1
 
     # A deletion has `+++ /dev/null`, so its only real name is the old one.
     path = new_path or old_path
     if path is None:
         return None
+    added, removed = _parse_hunks(lines[first_hunk:])
     return FileChange(
         path=path,
         kind=ChangeKind.RENAMED if renamed else kind,
-        additions=additions,
-        deletions=deletions,
+        added=added,
+        removed=removed,
         old_path=old_path if (renamed and old_path != path) else None,
         is_binary=is_binary,
     )

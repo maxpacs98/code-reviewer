@@ -96,3 +96,25 @@ def test_rename_to_a_quoted_path_keeps_the_plain_old_path(load_diff):
 def test_malformed_quoted_path_is_kept_verbatim():
     diff = parse_unified_diff('diff --git a/x b/x\n--- a/x\n+++ "b/x\\"\n+y\n')
     assert [f.path for f in diff.files] == ['"b/x\\"']
+
+
+def test_lines_starting_with_header_markers_inside_a_hunk_are_content(load_diff):
+    cart = load_diff("hunks.diff").files[0]
+    assert (cart.additions, cart.deletions) == (3, 2)
+    assert "+++ not a header" in [line.text for line in cart.added]
+    assert "--- not a header either" in [line.text for line in cart.removed]
+
+
+def test_added_lines_are_numbered_in_the_new_file(load_diff):
+    cart = load_diff("hunks.diff").files[0]
+    assert [line.number for line in cart.added] == [4, 5, 22]
+
+
+def test_removed_lines_are_numbered_in_the_old_file(load_diff):
+    cart = load_diff("hunks.diff").files[0]
+    assert [line.number for line in cart.removed] == [4, 21]
+
+
+def test_line_text_drops_the_diff_marker(load_diff):
+    cart = load_diff("hunks.diff").files[0]
+    assert cart.added[0].text == "  total = 0;"

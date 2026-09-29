@@ -7,6 +7,7 @@ from reviewer.model import ChangeKind, Severity
 DIFF_HEADER = "diff --git "
 DEV_NULL = "/dev/null"
 HEADER_PATHS = re.compile(r'(?P<old>"(?:[^"\\]|\\.)*"|a/.*?) (?P<new>"(?:[^"\\]|\\.)*"|b/.*)')
+HUNK_HEADER = re.compile(r"@@ -(?P<old>\d+)(?:,\d+)? \+(?P<new>\d+)(?:,\d+)? @@")
 RENAME_FROM = "rename from "
 RENAME_TO = "rename to "
 BINARY_MARKERS = ("Binary files ", "GIT binary patch")
