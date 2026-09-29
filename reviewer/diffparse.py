@@ -2,12 +2,8 @@
 
 from __future__ import annotations
 
-from reviewer.constants import DEV_NULL, DIFF_HEADER, HEADER_PATHS
+from reviewer.constants import BINARY_MARKERS, DEV_NULL, DIFF_HEADER, HEADER_PATHS, RENAME_FROM, RENAME_TO
 from reviewer.model import ChangeKind, Diff, FileChange
-
-_RENAME_FROM = "rename from "
-_RENAME_TO = "rename to "
-_BINARY_MARKERS = ("Binary files ", "GIT binary patch")
 
 
 def _unquote(path: str) -> str:
@@ -64,13 +60,13 @@ def _parse_section(lines: list[str]) -> FileChange | None:  # noqa: C901, PLR091
             kind = ChangeKind.ADDED
         elif line.startswith("deleted file mode"):
             kind = ChangeKind.DELETED
-        elif line.startswith(_RENAME_FROM):
+        elif line.startswith(RENAME_FROM):
             renamed = True
-            old_path = _repo_path(line[len(_RENAME_FROM) :])
-        elif line.startswith(_RENAME_TO):
+            old_path = _repo_path(line[len(RENAME_FROM) :])
+        elif line.startswith(RENAME_TO):
             renamed = True
-            new_path = _repo_path(line[len(_RENAME_TO) :])
-        elif line.startswith(_BINARY_MARKERS):
+            new_path = _repo_path(line[len(RENAME_TO) :])
+        elif line.startswith(BINARY_MARKERS):
             is_binary = True
         elif line.startswith("--- "):
             source = line[4:].strip()

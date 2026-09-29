@@ -7,6 +7,9 @@ from reviewer.model import ChangeKind, Severity
 DIFF_HEADER = "diff --git "
 DEV_NULL = "/dev/null"
 HEADER_PATHS = re.compile(r'(?P<old>"(?:[^"\\]|\\.)*"|a/.*?) (?P<new>"(?:[^"\\]|\\.)*"|b/.*)')
+RENAME_FROM = "rename from "
+RENAME_TO = "rename to "
+BINARY_MARKERS = ("Binary files ", "GIT binary patch")
 
 CHECK_FILE_COUNT = "diff-size/file-count"
 DEFAULT_MAX_FILES = 50
